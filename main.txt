@@ -1,0 +1,168 @@
+https://www.dropbox.com/scl/fi/q2q2uuyqeetue4qdhl7d4/mnqueen.cpp?rlkey=99w09e9trtliuy6tcq27zc642&st=wj2ky2gv&dl=0
+#include <iostream>
+#include <vector>
+#define SOLUTION_COLOR "\033[33m" // orange color for queens
+#define RESET_COLOR "\033[0m"
+#define FIRST_COLOR "\033[32m" // green color for starting position
+using namespace std;
+
+class Solution {
+public:
+    void printBoard(const vector<string> &board, int startRow, int startCol) {
+        // print * for empty cells and Q for queens change font color to orange for Q
+        //for  startRow and startCol change font color to green
+        // add column and row heading with number and red font color
+        // what is escape code for blue color 
+        // cout << "\033[34m  ";
+        cout << "\033[31m  ";
+        for (int i = 0; i < board.size(); i++) {
+            cout << i << " ";
+        }
+        cout << "\033[0m\n";
+        for (int i = 0; i < board.size(); i++) {
+            cout << "\033[31m" << i << "\033[0m ";
+            for (int j = 0; j < board.size(); j++) {
+                if (i == startRow && j == startCol) {
+                    cout << FIRST_COLOR << board[i][j] << RESET_COLOR << " ";
+                } else {
+                    cout << (board[i][j] == 'Q' ? SOLUTION_COLOR : "") << board[i][j] << RESET_COLOR << " ";
+                }
+            }
+            cout << endl;
+        }
+
+    }
+    
+    bool solveNQueens(int n) {
+        vector<string> board(n, string(n, '.'));
+        int startRow, startCol;
+
+        // Input initial queen position
+        cout << "Enter the coordinates (row and column) to place the first Queen (0-indexed): ";
+        cin >> startRow >> startCol;
+
+        // Check if coordinates are within bounds
+        while (startRow < 0 || startRow >= n || startCol < 0 || startCol >= n) {
+            cout << "Coordinates out of bounds! Please enter valid coordinates (0 to " << n - 1 << "): ";
+            cin >> startRow >> startCol;
+        }
+
+        board[startRow][startCol] = 'Q';
+
+        printBoard(board, startRow, startCol);
+        // Attempt to solve starting from the next row
+        if (!solve(board, startRow + 1, n, startRow)) {
+            cout << "No solution found starting from the given coordinates.\n";
+            return false;
+        }
+
+        cout << "One of the possible solutions is:\n";
+        printBoard(board, startRow, startCol);
+        return true;
+    }
+
+private:
+    bool solve(vector<string> &board, int row, int n, int startRow) {
+        if (row == n) {
+            return solve(board, 0, n, startRow); // Solution found
+        }
+
+        // Skip the manually placed queen's row
+        if (row == startRow) {
+            return true;
+        }
+
+        for (int col = 0; col < n; col++) {
+            if (isSafe(board, row, col, n)) {
+                board[row][col] = 'Q';
+                if (solve(board, row + 1, n, startRow)) return true;
+                board[row][col] = '.'; // Backtrack
+            }
+        }
+
+        return false; // No valid placement found in this row
+    }
+
+    bool isSafe(const vector<string> &board, int row, int col, int n) {
+        // Check all rows in this column
+        for (int i = 0; i < n; i++) {
+            if (board[i][col] == 'Q') return false;
+        }
+
+        // Check all columns in this row
+        for (int j = 0; j < n; j++) {
+            if (board[row][j] == 'Q') return false;
+        }
+
+        // Check the top-left to bottom-right diagonal
+        for (int i = 0; i < n; i++) {
+            int j = col - row + i;
+            if (j >= 0 && j < n && board[i][j] == 'Q') return false;
+        }
+
+        // Check the top-right to bottom-left diagonal
+        for (int i = 0; i < n; i++) {
+            int j = col + row - i;
+            if (j >= 0 && j < n && board[i][j] == 'Q') return false;
+        }
+
+        return true;
+    }
+};
+
+int main() {
+    int n;
+    cout << "Enter the size of the board (n): ";
+    cin >> n;
+
+    Solution solution;
+    while (!solution.solveNQueens(n)) {
+        cout << "Try entering a new starting position.\n";
+    }
+
+    return 0;
+}
+
+
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.22;
+
+contract StudentData {
+    struct Student {
+        string name;
+        int age;
+    }
+
+    Student[] public studentArray;
+
+    function addStudent(string memory name, int age) public {
+        for(uint i = 0; i<studentArray.length; i++) {
+            if (studentArray[i].age == age)
+            {
+                revert("Roll No Exists");
+            }
+        }
+        studentArray.push(Student(name, age));
+    }
+
+    function displayAllStudents() public view returns (Student[] memory) {
+        return studentArray;
+    }
+
+        function getStudentLength() public view returns (uint256) {
+        return studentArray.length;
+    }
+
+    function getStudent(uint128 index) public view returns (Student memory) {
+        require(studentArray.length > index, "Out of Index");
+        return studentArray[index];
+    }
+    receive() external payable {
+        // Optionally, you could implement logic here, like logging or events
+    }
+    fallback() external payable {
+        revert("Function does not exist or incorrect call data");
+    }
+}
